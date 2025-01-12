@@ -257,6 +257,9 @@ class SaleOrderController(APIView):
             sale_order = Sale_order.find_one({'_id': sale_order_id})
             if not sale_order:
                 return HttpResponse("No such Sale order found", status=403)
+            sale_order_state = sale_order["status"]
+            if str(sale_order_state).lower() != "pending":
+                return HttpResponse("Sale order is already resolved", status=403)
             # update the selling date in the sale order and complete the order
             # with transaction.atomic():
             today_date = datetime.now().strftime("%Y-%m-%d")
@@ -291,7 +294,9 @@ class SaleOrderController(APIView):
             sale_order = Sale_order.find_one({'_id': sale_order_id})
             if not sale_order:
                 return HttpResponse("No such Sale order found", status=403)
-            
+            sale_order_state = sale_order["status"]
+            if str(sale_order_state).lower() != "pending":
+                return HttpResponse("Sale order is already resolved", status=403)
             today_date = datetime.now().strftime("%Y-%m-%d")
             # update datetime in saleorder and status
             updated_field = {
